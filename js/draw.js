@@ -28,6 +28,7 @@
     let undoStack = [];           // ImageData の履歴
     const MAX_UNDO = 30;
     let hasDrawn = false;         // 何か描いたか
+    let fishDirection = 'right';  // 魚の向き 'right' | 'left'
 
     // --- DOM ---
     const connectScreen = document.getElementById('connect-screen');
@@ -52,6 +53,7 @@
         setupCanvas();
         buildPalette();
         bindToolbar();
+        bindDirectionSelector();
         bindCanvasEvents();
         bindSendButton();
         bindDrawAgain();
@@ -147,6 +149,21 @@
         currentSize = size;
         document.querySelectorAll('.size-btn').forEach(function (btn) {
             btn.classList.toggle('active', parseInt(btn.dataset.size, 10) === size);
+        });
+    }
+
+    // ============================================================
+    // 魚の向き選択
+    // ============================================================
+    function bindDirectionSelector() {
+        document.querySelectorAll('.direction-btn').forEach(function (btn) {
+            btn.addEventListener('pointerdown', function (e) {
+                e.preventDefault();
+                fishDirection = btn.dataset.dir;
+                document.querySelectorAll('.direction-btn').forEach(function (b) {
+                    b.classList.toggle('active', b.dataset.dir === fishDirection);
+                });
+            });
         });
     }
 
@@ -329,9 +346,9 @@
         const fishData = trimCanvas();
         if (!fishData) return;
 
-        // PeerJS で送信
+        // PeerJS で送信（向き情報付き）
         if (conn && conn.open) {
-            conn.send({ type: 'fish', image: fishData });
+            conn.send({ type: 'fish', image: fishData, direction: fishDirection });
         }
 
         // 送信完了画面

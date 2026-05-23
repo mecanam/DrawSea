@@ -88,7 +88,7 @@
 
             conn.on('data', function (data) {
                 if (data && data.type === 'fish') {
-                    addFish(data.image);
+                    addFish(data.image, data.direction || 'right');
                 }
             });
 
@@ -351,31 +351,52 @@
     // ============================================================
     // 魚クラス
     // ============================================================
-    function Fish(imageSrc) {
+    var FISH_MAX_RATIO = 0.15; // 画面幅に対する魚の最大サイズ比率
+
+    function Fish(imageSrc, facingDir) {
         var self = this;
         self.img = new Image();
         self.loaded = false;
+        // facingDir: 'right'=右向きで描いた, 'left'=左向きで描いた
+        self.facingDir = facingDir || 'right';
+
         self.img.onload = function () {
             self.loaded = true;
-            self.w = self.img.naturalWidth;
-            self.h = self.img.naturalHeight;
+            var natW = self.img.naturalWidth;
+            var natH = self.img.naturalHeight;
+
+            // 画面サイズに対して比率でスケーリング
+            var W = window.innerWidth;
+            var maxSize = W * FISH_MAX_RATIO;
+            var scale = 1;
+            if (natW > maxSize || natH > maxSize) {
+                scale = maxSize / Math.max(natW, natH);
+            }
+            // 最小サイズも確保
+            var minSize = W * 0.04;
+            if (natW * scale < minSize && natH * scale < minSize) {
+                scale = minSize / Math.min(natW, natH);
+            }
+            self.w = natW * scale;
+            self.h = natH * scale;
         };
         self.img.src = imageSrc;
 
         var W = window.innerWidth;
         var H = window.innerHeight;
-        var safeBottom = H * 0.78; // 海底より上
+        var safeBottom = H * 0.75;
 
-        // 初期位置（画面外からの登場もあり）
+        // 初期位置
         self.x = Math.random() * W;
-        self.y = Math.random() * safeBottom * 0.8 + safeBottom * 0.05;
-        self.w = 100; // 仮（画像ロード後に更新）
+        self.y = Math.random() * safeBottom * 0.7 + safeBottom * 0.08;
+        self.w = 100;
         self.h = 80;
 
-        // 移動パス
-        self.speed = 0.5 + Math.random() * 1.5;
+        // 移動
+        self.speed = 0.4 + Math.random() * 1.2;
         self.targetSpeed = self.speed;
-        self.direction = Math.random() > 0.5 ? 1 : -1; // 1=右, -1=左
+        // direction: 1=画面右へ移動中, -1=画面左へ移動中
+        self.direction = Math.random() > 0.5 ? 1 : -1;
 
         // ベジェパス
         self.path = null;
@@ -383,39 +404,58 @@
         self.generatePath();
 
         // 速度変化タイマー
-        self.speedChangeTimer = 2000 + Math.random() * 5000;
+        self.speedChangeTimer = 1500 + Math.random() * 3000;
+
+        // 一時停止（時々止まる）
+        self.pauseTimer = 5000 + Math.random() * 10000;
+        self.isPaused = false;
+        self.pauseDuration = 0;
 
         // 寿命
         self.createdAt = Date.now();
-        self.opacity = 0; // フェードイン
+        self.opacity = 0;
         self.alive = true;
 
-        // ゆらゆら（体の上下揺れ）
+        // ゆらゆら
         self.wobblePhase = Math.random() * Math.PI * 2;
+        self.wobbleSpeed = 0.002 + Math.random() * 0.002;
     }
 
     Fish.prototype.generatePath = function () {
         var W = window.innerWidth;
         var H = window.innerHeight;
-        var safeBottom = H * 0.75;
-        var margin = 80;
+        var safeBottom = H * 0.72;
+        var margin = 60;
 
-        // 現在位置から目標地点まで、制御点を含むベジェ曲線
         var targetX, targetY;
 
-        // 方向に基づいてターゲットを決める（大きく移動）
-        targetX = this.x + this.direction * (200 + Math.random() * 400);
-        targetY = Math.random() * safeBottom * 0.85 + margin;
+        // よりランダムな動き：距離も方向もバリエーション豊かに
+        var moveType = Math.random();
+        if (moveType < 0.3) {
+            // 短い移動（近場をうろうろ）
+            targetX = this.x + (Math.random() - 0.5) * 300;
+            targetY = this.y + (Math.random() - 0.5) * 200;
+        } else if (moveType < 0.7) {
+            // 中距離移動
+            targetX = this.x + this.direction * (150 + Math.random() * 350);
+            targetY = this.y + (Math.random() - 0.5) * 300;
+        } else {
+            // 長距離移動（画面を横切る）
+            targetX = this.x + this.direction * (400 + Math.random() * 500);
+            targetY = Math.random() * safeBottom * 0.8 + margin;
+        }
 
-        // 画面端に近づいたら反転
-        if (targetX < -100) { targetX = 200; this.direction = 1; }
-        if (targetX > W + 100) { targetX = W - 200; this.direction = -1; }
-        if (targetY < margin) targetY = margin;
-        if (targetY > safeBottom) targetY = safeBottom;
+        // 画面端処理
+        if (targetX < -50) { targetX = 150 + Math.random() * 200; this.direction = 1; }
+        if (targetX > W + 50) { targetX = W - 150 - Math.random() * 200; this.direction = -1; }
+        targetY = Math.max(margin, Math.min(safeBottom, targetY));
 
-        // 制御点（自然なカーブを作る）
-        var cpX = (this.x + targetX) / 2 + (Math.random() - 0.5) * 200;
-        var cpY = (this.y + targetY) / 2 + (Math.random() - 0.5) * 150;
+        // 制御点（大きくカーブさせる）
+        var midX = (this.x + targetX) / 2;
+        var midY = (this.y + targetY) / 2;
+        var cpX = midX + (Math.random() - 0.5) * 350;
+        var cpY = midY + (Math.random() - 0.5) * 250;
+        cpY = Math.max(margin * 0.5, Math.min(safeBottom, cpY));
 
         this.path = {
             sx: this.x, sy: this.y,
@@ -430,25 +470,49 @@
 
         var age = Date.now() - this.createdAt;
 
-        // フェードイン（最初の1秒）
+        // フェードイン/アウト
         if (age < 1000) {
             this.opacity = age / 1000;
         } else if (age > fishLifetime - 2000) {
-            // フェードアウト（最後の2秒）
             this.opacity = Math.max(0, (fishLifetime - age) / 2000);
             if (this.opacity <= 0) { this.alive = false; return; }
         } else {
             this.opacity = 1;
         }
 
-        // 速度を目標に向けて補間
-        this.speed += (this.targetSpeed - this.speed) * 0.02;
+        // 一時停止チェック
+        this.pauseTimer -= dt;
+        if (this.isPaused) {
+            this.pauseDuration -= dt;
+            if (this.pauseDuration <= 0) {
+                this.isPaused = false;
+                this.pauseTimer = 4000 + Math.random() * 12000;
+            }
+            this.wobblePhase += dt * this.wobbleSpeed;
+            return;
+        }
+        if (this.pauseTimer <= 0 && Math.random() < 0.4) {
+            this.isPaused = true;
+            this.pauseDuration = 500 + Math.random() * 2000;
+            return;
+        }
+        if (this.pauseTimer <= 0) {
+            this.pauseTimer = 4000 + Math.random() * 12000;
+        }
 
-        // 速度変化
+        // 速度を目標に向けて補間
+        this.speed += (this.targetSpeed - this.speed) * 0.03;
+
+        // 速度変化（頻繁に変わる）
         this.speedChangeTimer -= dt;
         if (this.speedChangeTimer <= 0) {
-            this.targetSpeed = 0.3 + Math.random() * 2.0;
-            this.speedChangeTimer = 2000 + Math.random() * 6000;
+            // 急加速や急減速もたまに
+            if (Math.random() < 0.15) {
+                this.targetSpeed = 1.5 + Math.random() * 2.0; // ダッシュ
+            } else {
+                this.targetSpeed = 0.2 + Math.random() * 1.5;
+            }
+            this.speedChangeTimer = 1000 + Math.random() * 4000;
         }
 
         // パスに沿って移動
@@ -456,18 +520,17 @@
         this.pathT += pathSpeed;
 
         if (this.pathT >= 1) {
-            // 次のパスを生成
             this.x = this.path.ex;
             this.y = this.path.ey;
 
-            // ランダムに方向転換
-            if (Math.random() < 0.3) {
+            // ランダムに方向転換（確率高め）
+            if (Math.random() < 0.4) {
                 this.direction *= -1;
             }
             // 画面端チェック
             var W = window.innerWidth;
-            if (this.x < 100) this.direction = 1;
-            if (this.x > W - 100) this.direction = -1;
+            if (this.x < 80) this.direction = 1;
+            if (this.x > W - 80) this.direction = -1;
 
             this.generatePath();
             return;
@@ -480,28 +543,37 @@
         this.y = mt * mt * this.path.sy + 2 * mt * t * this.path.cpy + t * t * this.path.ey;
 
         // 進行方向を計算して向きを更新
-        var dx = 2 * (t) * (this.path.ex - this.path.cpx) + 2 * (1 - t) * (this.path.cpx - this.path.sx);
-        if (Math.abs(dx) > 0.1) {
+        var dx = 2 * t * (this.path.ex - this.path.cpx) + 2 * (1 - t) * (this.path.cpx - this.path.sx);
+        if (Math.abs(dx) > 0.5) {
             this.direction = dx > 0 ? 1 : -1;
         }
 
         // ゆらゆら
-        this.wobblePhase += dt * 0.003;
+        this.wobblePhase += dt * this.wobbleSpeed;
     };
 
     Fish.prototype.draw = function (ctx) {
         if (!this.loaded || !this.alive) return;
 
-        var wobbleY = Math.sin(this.wobblePhase) * 4;
-        var wobbleAngle = Math.sin(this.wobblePhase * 0.7) * 0.05;
+        var wobbleY = Math.sin(this.wobblePhase) * 5;
+        var wobbleAngle = Math.sin(this.wobblePhase * 0.7) * 0.06;
 
         ctx.save();
         ctx.globalAlpha = this.opacity;
         ctx.translate(this.x, this.y + wobbleY);
         ctx.rotate(wobbleAngle);
 
-        // 進行方向に合わせて反転
-        if (this.direction === -1) {
+        // 魚の描画向きと移動方向から反転判定
+        // facingDir='right': 元の画像が右向き → 左に泳ぐときに反転
+        // facingDir='left':  元の画像が左向き → 右に泳ぐときに反転
+        var needFlip = false;
+        if (this.facingDir === 'right') {
+            needFlip = (this.direction === -1);
+        } else {
+            needFlip = (this.direction === 1);
+        }
+
+        if (needFlip) {
             ctx.scale(-1, 1);
         }
 
@@ -512,8 +584,8 @@
     // ============================================================
     // 魚の追加
     // ============================================================
-    function addFish(imageSrc) {
-        var fish = new Fish(imageSrc);
+    function addFish(imageSrc, facingDir) {
+        var fish = new Fish(imageSrc, facingDir);
         fishes.push(fish);
 
         // 登場エフェクト

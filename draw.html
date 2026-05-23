@@ -75,8 +75,23 @@
                 <canvas id="draw-canvas"></canvas>
             </div>
 
-            <!-- 送信ボタン -->
+            <!-- 送信エリア -->
             <div class="send-area">
+                <!-- 魚の向き選択 -->
+                <div class="direction-selector">
+                    <span class="direction-label">むき</span>
+                    <button class="direction-btn active" data-dir="right" title="みぎむき">
+                        <svg viewBox="0 0 40 28" width="36" height="25">
+                            <text x="4" y="22" font-size="22">🐟</text>
+                        </svg>
+                    </button>
+                    <button class="direction-btn" data-dir="left" title="ひだりむき">
+                        <svg viewBox="0 0 40 28" width="36" height="25" style="transform:scaleX(-1)">
+                            <text x="4" y="22" font-size="22">🐟</text>
+                        </svg>
+                    </button>
+                </div>
+                <!-- 送信ボタン -->
                 <button id="send-btn" disabled>
                     <div class="send-icon-wrap">
                         <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">

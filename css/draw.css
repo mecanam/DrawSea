@@ -265,13 +265,52 @@ html, body {
     touch-action: none;
 }
 
-/* 送信ボタン */
+/* 送信エリア */
 .send-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-shrink: 0;
+    width: 90px;
+}
+
+/* 魚の向き選択 */
+.direction-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.direction-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #636e72;
+    letter-spacing: 1px;
+}
+
+.direction-btn {
+    width: 52px;
+    height: 38px;
+    border: 2.5px solid transparent;
+    background: #f1f3f5;
+    border-radius: 10px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    width: 90px;
+    transition: all 0.15s;
+}
+
+.direction-btn.active {
+    border-color: #0984e3;
+    background: #e3f2fd;
+}
+
+.direction-btn:active {
+    transform: scale(0.92);
 }
 
 #send-btn {
