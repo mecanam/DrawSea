@@ -363,7 +363,7 @@ html, body {
     box-shadow: inset 0 0 0 1px #ddd, 0 1px 4px rgba(0,0,0,0.1);
 }
 
-/* === 向き選択画面 === */
+/* === 向き選択モーダル === */
 #direction-screen {
     position: fixed;
     inset: 0;
@@ -373,7 +373,7 @@ html, body {
 .direction-overlay {
     width: 100%;
     height: 100%;
-    background: rgba(12, 45, 72, 0.9);
+    background: rgba(12, 45, 72, 0.92);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -382,83 +382,122 @@ html, body {
 
 .direction-container {
     text-align: center;
+    background: rgba(255,255,255,0.1);
+    border-radius: 32px;
+    padding: 32px 40px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
     animation: sentPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 440px;
+    width: 90%;
 }
 
 .direction-title {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 800;
     color: white;
-    margin-bottom: 24px;
+    margin-bottom: 4px;
     text-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
+.direction-subtitle {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 20px;
+}
+
 .direction-preview {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #direction-fish-img {
-    max-width: 240px;
-    max-height: 180px;
-    filter: drop-shadow(0 4px 16px rgba(0,0,0,0.3));
+    max-width: 220px;
+    max-height: 160px;
+    filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4));
 }
 
 .direction-buttons {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     justify-content: center;
     margin-bottom: 24px;
 }
 
 .dir-choice-btn {
-    width: 140px;
-    height: 100px;
-    border: 3px solid rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.1);
-    border-radius: 20px;
+    flex: 1;
+    max-width: 160px;
+    height: 80px;
+    border: 3px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+    border-radius: 18px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     color: white;
     transition: all 0.15s;
-    backdrop-filter: blur(4px);
+}
+
+.dir-choice-btn.active {
+    border-color: #74b9ff;
+    background: rgba(9, 132, 227, 0.5);
+    box-shadow: 0 0 20px rgba(9,132,227,0.3);
 }
 
 .dir-choice-btn:active {
-    transform: scale(0.93);
-    background: rgba(9, 132, 227, 0.6);
-    border-color: white;
+    transform: scale(0.95);
 }
 
 .dir-arrow {
-    font-size: 36px;
-    font-weight: 800;
+    font-size: 28px;
 }
 
 .dir-text {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     font-family: inherit;
 }
 
-.direction-back {
-    padding: 10px 32px;
-    font-size: 15px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.7);
-    background: none;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 12px;
+.direction-send {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    background: linear-gradient(135deg, #0984e3 0%, #0773c5 100%);
+    border: none;
+    border-radius: 18px;
     cursor: pointer;
     font-family: inherit;
-    transition: all 0.15s;
+    box-shadow: 0 4px 20px rgba(9,132,227,0.4);
+    transition: transform 0.1s;
+    margin-bottom: 12px;
+}
+
+.direction-send:active {
+    transform: scale(0.97);
+}
+
+.direction-back {
+    padding: 10px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.15s;
 }
 
 .direction-back:active {
-    background: rgba(255,255,255,0.1);
     color: white;
 }
 

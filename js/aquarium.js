@@ -537,15 +537,16 @@
         }
 
         // ベジェ曲線上の位置を計算
+        var prevX = this.x;
         var t = this.pathT;
         var mt = 1 - t;
         this.x = mt * mt * this.path.sx + 2 * mt * t * this.path.cpx + t * t * this.path.ex;
         this.y = mt * mt * this.path.sy + 2 * mt * t * this.path.cpy + t * t * this.path.ey;
 
-        // 進行方向を計算して向きを更新
-        var dx = 2 * t * (this.path.ex - this.path.cpx) + 2 * (1 - t) * (this.path.cpx - this.path.sx);
-        if (Math.abs(dx) > 0.5) {
-            this.direction = dx > 0 ? 1 : -1;
+        // 実際の移動方向から向きを更新
+        var actualDx = this.x - prevX;
+        if (Math.abs(actualDx) > 0.2) {
+            this.direction = actualDx > 0 ? 1 : -1;
         }
 
         // ゆらゆら

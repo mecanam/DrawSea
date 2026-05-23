@@ -94,25 +94,27 @@
         </div>
     </div>
 
-    <!-- 向き選択画面 -->
+    <!-- 向き選択モーダル -->
     <div id="direction-screen" style="display:none">
         <div class="direction-overlay">
             <div class="direction-container">
-                <h2 class="direction-title">どっちむき？</h2>
+                <h2 class="direction-title">魚はどっちむき？</h2>
+                <p class="direction-subtitle">かいた魚の むきを えらんでね</p>
                 <div class="direction-preview">
                     <img id="direction-fish-img" src="" alt="あなたの魚">
                 </div>
                 <div class="direction-buttons">
-                    <button class="dir-choice-btn" data-dir="left">
-                        <span class="dir-arrow">←</span>
-                        <span class="dir-text">ひだり</span>
+                    <button class="dir-choice-btn active" data-dir="right">
+                        <span class="dir-arrow">👉</span>
+                        <span class="dir-text">みぎむき</span>
                     </button>
-                    <button class="dir-choice-btn" data-dir="right">
-                        <span class="dir-arrow">→</span>
-                        <span class="dir-text">みぎ</span>
+                    <button class="dir-choice-btn" data-dir="left">
+                        <span class="dir-arrow">👈</span>
+                        <span class="dir-text">ひだりむき</span>
                     </button>
                 </div>
-                <button id="direction-back-btn" class="direction-back">もどる</button>
+                <button id="direction-send-btn" class="direction-send">🌊 おくる！</button>
+                <button id="direction-back-btn" class="direction-back">← もどる</button>
             </div>
         </div>
     </div>

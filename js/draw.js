@@ -46,6 +46,7 @@
     const paletteEl = document.getElementById('color-palette');
     const directionScreen = document.getElementById('direction-screen');
     const directionFishImg = document.getElementById('direction-fish-img');
+    const directionSendBtn = document.getElementById('direction-send-btn');
     const directionBackBtn = document.getElementById('direction-back-btn');
     const sentFishImg = document.getElementById('sent-fish-img');
     const drawAgainBtn = document.getElementById('draw-again-btn');
@@ -343,19 +344,27 @@
     }
 
     // ============================================================
-    // 向き選択画面
+    // 向き選択モーダル
     // ============================================================
     function bindDirectionScreen() {
-        // 左右ボタン
+        // 向き選択ボタン（トグル）
         document.querySelectorAll('.dir-choice-btn').forEach(function (btn) {
             btn.addEventListener('pointerdown', function (e) {
                 e.preventDefault();
                 fishDirection = btn.dataset.dir;
-                confirmSend();
+                document.querySelectorAll('.dir-choice-btn').forEach(function (b) {
+                    b.classList.toggle('active', b.dataset.dir === fishDirection);
+                });
             });
         });
 
-        // 戻るボタン
+        // おくる！ボタン
+        directionSendBtn.addEventListener('pointerdown', function (e) {
+            e.preventDefault();
+            confirmSend();
+        });
+
+        // もどるボタン
         directionBackBtn.addEventListener('pointerdown', function (e) {
             e.preventDefault();
             directionScreen.style.display = 'none';
