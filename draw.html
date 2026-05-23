@@ -75,23 +75,8 @@
                 <canvas id="draw-canvas"></canvas>
             </div>
 
-            <!-- 送信エリア -->
+            <!-- 送信ボタン -->
             <div class="send-area">
-                <!-- 魚の向き選択 -->
-                <div class="direction-selector">
-                    <span class="direction-label">むき</span>
-                    <button class="direction-btn active" data-dir="right" title="みぎむき">
-                        <svg viewBox="0 0 40 28" width="36" height="25">
-                            <text x="4" y="22" font-size="22">🐟</text>
-                        </svg>
-                    </button>
-                    <button class="direction-btn" data-dir="left" title="ひだりむき">
-                        <svg viewBox="0 0 40 28" width="36" height="25" style="transform:scaleX(-1)">
-                            <text x="4" y="22" font-size="22">🐟</text>
-                        </svg>
-                    </button>
-                </div>
-                <!-- 送信ボタン -->
                 <button id="send-btn" disabled>
                     <div class="send-icon-wrap">
                         <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
@@ -106,6 +91,29 @@
         <!-- カラーパレット -->
         <div class="color-palette" id="color-palette">
             <!-- JSで生成 -->
+        </div>
+    </div>
+
+    <!-- 向き選択画面 -->
+    <div id="direction-screen" style="display:none">
+        <div class="direction-overlay">
+            <div class="direction-container">
+                <h2 class="direction-title">どっちむき？</h2>
+                <div class="direction-preview">
+                    <img id="direction-fish-img" src="" alt="あなたの魚">
+                </div>
+                <div class="direction-buttons">
+                    <button class="dir-choice-btn" data-dir="left">
+                        <span class="dir-arrow">←</span>
+                        <span class="dir-text">ひだり</span>
+                    </button>
+                    <button class="dir-choice-btn" data-dir="right">
+                        <span class="dir-arrow">→</span>
+                        <span class="dir-text">みぎ</span>
+                    </button>
+                </div>
+                <button id="direction-back-btn" class="direction-back">もどる</button>
+            </div>
         </div>
     </div>
 

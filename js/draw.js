@@ -29,6 +29,7 @@
     const MAX_UNDO = 30;
     let hasDrawn = false;         // 何か描いたか
     let fishDirection = 'right';  // 魚の向き 'right' | 'left'
+    let pendingFishData = null;   // 向き選択待ちの魚画像データ
 
     // --- DOM ---
     const connectScreen = document.getElementById('connect-screen');
@@ -43,6 +44,9 @@
     const undoBtn = document.getElementById('undo-btn');
     const clearBtn = document.getElementById('clear-btn');
     const paletteEl = document.getElementById('color-palette');
+    const directionScreen = document.getElementById('direction-screen');
+    const directionFishImg = document.getElementById('direction-fish-img');
+    const directionBackBtn = document.getElementById('direction-back-btn');
     const sentFishImg = document.getElementById('sent-fish-img');
     const drawAgainBtn = document.getElementById('draw-again-btn');
 
@@ -53,9 +57,9 @@
         setupCanvas();
         buildPalette();
         bindToolbar();
-        bindDirectionSelector();
         bindCanvasEvents();
         bindSendButton();
+        bindDirectionScreen();
         bindDrawAgain();
         checkURLParams();
     }
@@ -149,21 +153,6 @@
         currentSize = size;
         document.querySelectorAll('.size-btn').forEach(function (btn) {
             btn.classList.toggle('active', parseInt(btn.dataset.size, 10) === size);
-        });
-    }
-
-    // ============================================================
-    // 魚の向き選択
-    // ============================================================
-    function bindDirectionSelector() {
-        document.querySelectorAll('.direction-btn').forEach(function (btn) {
-            btn.addEventListener('pointerdown', function (e) {
-                e.preventDefault();
-                fishDirection = btn.dataset.dir;
-                document.querySelectorAll('.direction-btn').forEach(function (b) {
-                    b.classList.toggle('active', b.dataset.dir === fishDirection);
-                });
-            });
         });
     }
 
@@ -346,15 +335,48 @@
         const fishData = trimCanvas();
         if (!fishData) return;
 
+        // 向き選択画面へ遷移
+        pendingFishData = fishData;
+        directionFishImg.src = fishData;
+        drawScreen.style.display = 'none';
+        directionScreen.style.display = 'block';
+    }
+
+    // ============================================================
+    // 向き選択画面
+    // ============================================================
+    function bindDirectionScreen() {
+        // 左右ボタン
+        document.querySelectorAll('.dir-choice-btn').forEach(function (btn) {
+            btn.addEventListener('pointerdown', function (e) {
+                e.preventDefault();
+                fishDirection = btn.dataset.dir;
+                confirmSend();
+            });
+        });
+
+        // 戻るボタン
+        directionBackBtn.addEventListener('pointerdown', function (e) {
+            e.preventDefault();
+            directionScreen.style.display = 'none';
+            drawScreen.style.display = 'flex';
+            pendingFishData = null;
+        });
+    }
+
+    function confirmSend() {
+        if (!pendingFishData) return;
+
         // PeerJS で送信（向き情報付き）
         if (conn && conn.open) {
-            conn.send({ type: 'fish', image: fishData, direction: fishDirection });
+            conn.send({ type: 'fish', image: pendingFishData, direction: fishDirection });
         }
 
-        // 送信完了画面
-        sentFishImg.src = fishData;
-        drawScreen.style.display = 'none';
+        // 送信完了画面へ
+        sentFishImg.src = pendingFishData;
+        directionScreen.style.display = 'none';
         sentScreen.style.display = 'block';
+        pendingFishData = null;
     }
 
     // ============================================================
