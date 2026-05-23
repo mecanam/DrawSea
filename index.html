@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おえかきすいそう</title>
+    <link rel="stylesheet" href="css/aquarium.css">
+</head>
+<body>
+    <!-- ロビー画面 -->
+    <div id="lobby">
+        <div class="lobby-container">
+            <h1 class="lobby-title">🐟 おえかきすいそう 🐟</h1>
+            <p class="lobby-desc">タブレットでおえかきした魚が<br>スクリーンをおよぎます</p>
+
+            <div class="lobby-card">
+                <div class="room-section">
+                    <label class="room-label">ルームID</label>
+                    <div class="room-id" id="room-id">---</div>
+                </div>
+                <div class="qr-section">
+                    <canvas id="qr-canvas"></canvas>
+                    <p class="qr-hint">タブレットでスキャン</p>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <label class="setting-label">
+                    🐠 魚の寿命
+                    <div class="setting-control">
+                        <input type="range" id="fish-lifetime" min="1" max="30" value="5" step="1">
+                        <span id="lifetime-value">5</span> 分
+                    </div>
+                </label>
+            </div>
+
+            <button id="start-btn" class="start-btn">🌊 起動する</button>
+            <p class="lobby-status" id="lobby-status"></p>
+        </div>
+    </div>
+
+    <!-- 水族館画面 -->
+    <div id="aquarium" style="display:none">
+        <!-- 海の背景（CSS） -->
+        <div class="ocean-bg">
+            <!-- 光線 -->
+            <div class="light-rays">
+                <div class="ray r1"></div>
+                <div class="ray r2"></div>
+                <div class="ray r3"></div>
+                <div class="ray r4"></div>
+                <div class="ray r5"></div>
+            </div>
+        </div>
+
+        <!-- 泡 -->
+        <div class="bubbles-layer" id="bubbles-layer"></div>
+
+        <!-- 魚キャンバス -->
+        <canvas id="fish-canvas"></canvas>
+
+        <!-- 海底装飾 -->
+        <div class="seafloor">
+            <div class="sand"></div>
+            <!-- サンゴ -->
+            <div class="coral c1"></div>
+            <div class="coral c2"></div>
+            <div class="coral c3"></div>
+            <div class="coral c4"></div>
+            <div class="coral c5"></div>
+            <!-- 岩 -->
+            <div class="rock r1"></div>
+            <div class="rock r2"></div>
+            <div class="rock r3"></div>
+            <!-- 海藻 -->
+            <div class="seaweed sw1"><div class="sw-leaf"></div><div class="sw-leaf"></div><div class="sw-leaf"></div></div>
+            <div class="seaweed sw2"><div class="sw-leaf"></div><div class="sw-leaf"></div><div class="sw-leaf"></div></div>
+            <div class="seaweed sw3"><div class="sw-leaf"></div><div class="sw-leaf"></div><div class="sw-leaf"></div></div>
+            <div class="seaweed sw4"><div class="sw-leaf"></div><div class="sw-leaf"></div><div class="sw-leaf"></div></div>
+        </div>
+
+        <!-- メニュー -->
+        <div class="menu-trigger" id="menu-trigger">
+            <button class="menu-btn" id="menu-btn">☰</button>
+        </div>
+        <div class="menu-panel" id="menu-panel">
+            <h3>メニュー</h3>
+            <button class="menu-item" id="menu-reset">🔄 リセット（魚を全消去）</button>
+            <button class="menu-item" id="menu-exit">🚪 終了（ロビーに戻る）</button>
+            <div class="menu-setting">
+                <label>🐠 魚の寿命
+                    <div class="setting-control">
+                        <input type="range" id="menu-lifetime" min="1" max="30" value="5" step="1">
+                        <span id="menu-lifetime-value">5</span> 分
+                    </div>
+                </label>
+            </div>
+            <button class="menu-close" id="menu-close">✕ とじる</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="js/aquarium.js"></script>
+</body>
+</html>

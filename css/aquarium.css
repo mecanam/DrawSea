@@ -1,0 +1,577 @@
+/* === リセット・基本 === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Rounded Mplus 1c', 'Hiragino Maru Gothic ProN', 'BIZ UDPGothic', sans-serif;
+    background: #001220;
+}
+
+/* ============================================================
+   ロビー画面
+   ============================================================ */
+#lobby {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #0c2d48 0%, #145374 40%, #1a6b8a 100%);
+    position: relative;
+}
+
+.lobby-container {
+    background: rgba(255,255,255,0.95);
+    border-radius: 32px;
+    padding: 40px 48px;
+    text-align: center;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.3);
+    max-width: 520px;
+    width: 90%;
+}
+
+.lobby-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #0c2d48;
+    margin-bottom: 8px;
+}
+
+.lobby-desc {
+    font-size: 15px;
+    color: #636e72;
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+
+.lobby-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.room-section {
+    text-align: center;
+}
+
+.room-label {
+    font-size: 13px;
+    color: #636e72;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.room-id {
+    font-size: 48px;
+    font-weight: 900;
+    color: #0984e3;
+    letter-spacing: 6px;
+    margin-top: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.qr-section {
+    text-align: center;
+}
+
+#qr-canvas {
+    width: 140px;
+    height: 140px;
+    border: 3px solid #dfe6e9;
+    border-radius: 12px;
+}
+
+.qr-hint {
+    font-size: 11px;
+    color: #b2bec3;
+    margin-top: 4px;
+}
+
+.settings-section {
+    margin-bottom: 24px;
+}
+
+.setting-label {
+    font-size: 15px;
+    color: #2d3436;
+    font-weight: 600;
+}
+
+.setting-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    justify-content: center;
+}
+
+.setting-control input[type="range"] {
+    width: 180px;
+    accent-color: #0984e3;
+}
+
+.setting-control span {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0984e3;
+    min-width: 28px;
+}
+
+.start-btn {
+    display: inline-block;
+    padding: 16px 56px;
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    background: linear-gradient(135deg, #0984e3 0%, #0773c5 100%);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 6px 24px rgba(9,132,227,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(9,132,227,0.5);
+}
+
+.start-btn:active {
+    transform: translateY(0);
+}
+
+.lobby-status {
+    margin-top: 16px;
+    font-size: 13px;
+    color: #636e72;
+    min-height: 20px;
+}
+
+/* ============================================================
+   水族館画面
+   ============================================================ */
+#aquarium {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: none;
+}
+
+/* --- 海の背景 --- */
+.ocean-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        #0a3d62 0%,
+        #0c5a8a 15%,
+        #0e6fa0 35%,
+        #0a4f7a 60%,
+        #083050 85%,
+        #041620 100%
+    );
+    z-index: 0;
+}
+
+/* 光線 */
+.light-rays {
+    position: absolute;
+    top: -10%;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    overflow: hidden;
+    opacity: 0.15;
+    z-index: 1;
+}
+
+.ray {
+    position: absolute;
+    top: 0;
+    width: 120px;
+    height: 120%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, transparent 100%);
+    transform-origin: top center;
+    animation: rayWave 8s ease-in-out infinite;
+}
+
+.ray.r1 { left: 10%; width: 80px; animation-delay: 0s; transform: rotate(-8deg); }
+.ray.r2 { left: 25%; width: 140px; animation-delay: 1.5s; transform: rotate(-3deg); }
+.ray.r3 { left: 45%; width: 100px; animation-delay: 3s; transform: rotate(2deg); }
+.ray.r4 { left: 65%; width: 160px; animation-delay: 0.8s; transform: rotate(5deg); }
+.ray.r5 { left: 82%; width: 90px; animation-delay: 2.2s; transform: rotate(10deg); }
+
+@keyframes rayWave {
+    0%, 100% { opacity: 1; transform: rotate(var(--rot, 0deg)) scaleX(1); }
+    50% { opacity: 0.6; transform: rotate(var(--rot, 0deg)) scaleX(1.3); }
+}
+
+/* --- 泡 --- */
+.bubbles-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.bub {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.5), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.15);
+    animation: bubbleRise linear infinite;
+    opacity: 0;
+}
+
+@keyframes bubbleRise {
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    10% { opacity: 0.7; }
+    90% { opacity: 0.4; }
+    100% { transform: translateY(-110vh) translateX(var(--drift, 20px)) scale(1.2); opacity: 0; }
+}
+
+/* --- 魚キャンバス --- */
+#fish-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}
+
+/* --- 海底装飾 --- */
+.seafloor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 22%;
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* 砂地 */
+.sand {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(180deg, #3d2b1f 0%, #5a3f2b 30%, #6b4c33 100%);
+    border-radius: 60% 50% 0 0 / 40% 40% 0 0;
+}
+
+.sand::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 100%;
+    height: 16px;
+    background: linear-gradient(180deg, transparent, rgba(61,43,31,0.6));
+    border-radius: 50%;
+}
+
+/* サンゴ */
+.coral {
+    position: absolute;
+    bottom: 20%;
+    border-radius: 50% 50% 10% 10%;
+}
+
+.coral.c1 {
+    left: 3%;
+    width: 80px;
+    height: 100px;
+    background: linear-gradient(160deg, #e74c3c, #c0392b);
+    border-radius: 40% 45% 15% 10%;
+    transform: rotate(-5deg);
+}
+.coral.c1::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: 20px;
+    width: 45px;
+    height: 60px;
+    background: linear-gradient(160deg, #e74c3c, #d63031);
+    border-radius: 50% 50% 20% 20%;
+    transform: rotate(15deg);
+}
+
+.coral.c2 {
+    left: 12%;
+    width: 50px;
+    height: 70px;
+    background: linear-gradient(160deg, #fd79a8, #e84393);
+    border-radius: 45% 50% 10% 15%;
+    bottom: 22%;
+}
+
+.coral.c3 {
+    right: 8%;
+    width: 90px;
+    height: 110px;
+    background: linear-gradient(160deg, #fdcb6e, #e17055);
+    border-radius: 35% 50% 15% 10%;
+    transform: rotate(8deg);
+}
+.coral.c3::before {
+    content: '';
+    position: absolute;
+    top: -25px;
+    right: 15px;
+    width: 40px;
+    height: 55px;
+    background: linear-gradient(160deg, #f39c12, #e17055);
+    border-radius: 50% 50% 20% 20%;
+    transform: rotate(-10deg);
+}
+
+.coral.c4 {
+    right: 20%;
+    width: 55px;
+    height: 75px;
+    background: linear-gradient(160deg, #a29bfe, #6c5ce7);
+    border-radius: 40% 50% 12% 15%;
+    bottom: 24%;
+}
+
+.coral.c5 {
+    left: 40%;
+    width: 60px;
+    height: 50px;
+    background: linear-gradient(160deg, #55efc4, #00b894);
+    border-radius: 50% 45% 20% 15%;
+    bottom: 18%;
+}
+
+/* 岩 */
+.rock {
+    position: absolute;
+    bottom: 10%;
+    background: linear-gradient(160deg, #636e72, #2d3436);
+    border-radius: 50% 55% 45% 50%;
+}
+
+.rock.r1 {
+    left: 22%;
+    width: 120px;
+    height: 60px;
+    bottom: 16%;
+}
+
+.rock.r2 {
+    right: 30%;
+    width: 90px;
+    height: 45px;
+    bottom: 14%;
+    background: linear-gradient(160deg, #74b9ff, #2d3436);
+}
+
+.rock.r3 {
+    left: 55%;
+    width: 140px;
+    height: 55px;
+    bottom: 12%;
+}
+
+/* 海藻 */
+.seaweed {
+    position: absolute;
+    bottom: 25%;
+    width: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sw-leaf {
+    width: 18px;
+    height: 50px;
+    background: linear-gradient(180deg, #27ae60, #2ecc71);
+    border-radius: 50% 50% 30% 30%;
+    margin-top: -15px;
+    animation: seaweedSway 4s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+
+.sw-leaf:nth-child(2) {
+    animation-delay: 0.3s;
+    width: 22px;
+    height: 60px;
+    background: linear-gradient(180deg, #2ecc71, #55efc4);
+}
+
+.sw-leaf:nth-child(3) {
+    animation-delay: 0.6s;
+    width: 16px;
+    height: 45px;
+}
+
+.seaweed.sw1 { left: 8%; }
+.seaweed.sw2 { left: 35%; }
+.seaweed.sw2 .sw-leaf { animation-delay: 1s; }
+.seaweed.sw3 { right: 15%; }
+.seaweed.sw3 .sw-leaf { animation-delay: 0.5s; height: 55px; }
+.seaweed.sw4 { right: 38%; }
+.seaweed.sw4 .sw-leaf { animation-delay: 1.5s; }
+
+@keyframes seaweedSway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(8deg); }
+}
+
+/* ============================================================
+   メニュー
+   ============================================================ */
+.menu-trigger {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.menu-trigger.visible {
+    opacity: 1;
+}
+
+.menu-btn {
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: rgba(0,0,0,0.4);
+    color: white;
+    font-size: 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 0.15s;
+}
+
+.menu-btn:hover {
+    background: rgba(0,0,0,0.6);
+}
+
+.menu-panel {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 21;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 24px;
+    min-width: 300px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    display: none;
+    cursor: default;
+}
+
+.menu-panel.open {
+    display: block;
+    animation: menuPop 0.2s ease;
+}
+
+@keyframes menuPop {
+    from { transform: scale(0.9) translateY(-10px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.menu-panel h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 16px;
+}
+
+.menu-item {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3436;
+    background: #f1f3f5;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    margin-bottom: 8px;
+    transition: background 0.15s;
+}
+
+.menu-item:hover {
+    background: #dfe6e9;
+}
+
+.menu-setting {
+    padding: 12px 0;
+}
+
+.menu-setting label {
+    font-size: 15px;
+    color: #2d3436;
+    font-weight: 600;
+}
+
+.menu-close {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    color: #636e72;
+    background: none;
+    border: 1px solid #dfe6e9;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+    transition: background 0.15s;
+}
+
+.menu-close:hover {
+    background: #f1f3f5;
+}
+
+/* ============================================================
+   魚登場エフェクト（スプラッシュ）
+   ============================================================ */
+.fish-splash {
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+    animation: splashAnim 0.8s ease-out forwards;
+}
+
+@keyframes splashAnim {
+    0% { transform: scale(0.3); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+.fish-splash::before,
+.fish-splash::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+}
+
+.fish-splash::before { top: -10px; left: -15px; }
+.fish-splash::after { top: 5px; left: 10px; width: 14px; height: 14px; }
