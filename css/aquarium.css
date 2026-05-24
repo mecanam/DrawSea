@@ -177,6 +177,13 @@ html, body {
     z-index: 0;
 }
 
+.ocean-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 10, 30, 0.35);
+}
+
 /* 光線（背景画像に含まれるため非表示） */
 .light-rays {
     display: none;
