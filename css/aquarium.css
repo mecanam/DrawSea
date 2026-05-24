@@ -173,7 +173,7 @@ html, body {
 .ocean-bg {
     position: absolute;
     inset: 0;
-    background: url('../background.png') center center / cover no-repeat;
+    background: url('/DrawSea/background.png') center center / cover no-repeat;
     z-index: 0;
 }
 
