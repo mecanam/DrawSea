@@ -76,6 +76,8 @@
         const wrapper = canvas.parentElement;
         const wrapW = wrapper.clientWidth;
         const wrapH = wrapper.clientHeight;
+        // display:none の場合はサイズ0なのでスキップ
+        if (wrapW === 0 || wrapH === 0) return;
         // 内部解像度をラッパーに合わせる（描画エリア＝見える範囲）
         CANVAS_W = wrapW;
         CANVAS_H = wrapH;
