@@ -78,9 +78,18 @@
         const wrapper = canvas.parentElement;
         const wrapW = wrapper.clientWidth;
         const wrapH = wrapper.clientHeight;
-        const scale = Math.min(wrapW / CANVAS_W, wrapH / CANVAS_H);
-        canvas.style.width = Math.floor(CANVAS_W * scale) + 'px';
-        canvas.style.height = Math.floor(CANVAS_H * scale) + 'px';
+        const canvasAspect = CANVAS_W / CANVAS_H;
+        const wrapAspect = wrapW / wrapH;
+        var displayW, displayH;
+        if (wrapAspect > canvasAspect) {
+            displayH = wrapH;
+            displayW = Math.round(wrapH * canvasAspect);
+        } else {
+            displayW = wrapW;
+            displayH = Math.round(wrapW / canvasAspect);
+        }
+        canvas.style.width = displayW + 'px';
+        canvas.style.height = displayH + 'px';
     }
 
     // ============================================================
@@ -147,7 +156,9 @@
         document.querySelectorAll('.tool-btn').forEach(function (btn) {
             btn.classList.toggle('active', btn.dataset.tool === tool);
         });
-        canvas.style.cursor = tool === 'eraser' ? 'cell' : 'crosshair';
+        if (tool === 'eraser') canvas.style.cursor = 'cell';
+        else if (tool === 'fill') canvas.style.cursor = 'pointer';
+        else canvas.style.cursor = 'crosshair';
     }
 
     function selectSize(size) {
@@ -212,6 +223,14 @@
 
     function onPointerDown(e) {
         e.preventDefault();
+        if (currentTool === 'fill') {
+            var pos = getCanvasPos(e);
+            floodFill(Math.round(pos.x), Math.round(pos.y), currentColor);
+            saveUndoState();
+            hasDrawn = true;
+            sendBtn.disabled = false;
+            return;
+        }
         canvas.setPointerCapture(e.pointerId);
         isDrawing = true;
         points = [getCanvasPos(e)];
@@ -284,6 +303,61 @@
         ctx.lineWidth = currentSize;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
+    }
+
+    // ============================================================
+    // 塗りつぶし（フラッドフィル）
+    // ============================================================
+    function floodFill(startX, startY, fillColor) {
+        if (startX < 0 || startX >= CANVAS_W || startY < 0 || startY >= CANVAS_H) return;
+
+        var imageData = ctx.getImageData(0, 0, CANVAS_W, CANVAS_H);
+        var data = imageData.data;
+
+        // 塗りつぶし色をRGBAに変換
+        var tmpCanvas = document.createElement('canvas');
+        tmpCanvas.width = 1; tmpCanvas.height = 1;
+        var tmpCtx = tmpCanvas.getContext('2d');
+        tmpCtx.fillStyle = fillColor;
+        tmpCtx.fillRect(0, 0, 1, 1);
+        var fc = tmpCtx.getImageData(0, 0, 1, 1).data;
+        var fillR = fc[0], fillG = fc[1], fillB = fc[2], fillA = fc[3];
+
+        // 開始ピクセルの色
+        var idx = (startY * CANVAS_W + startX) * 4;
+        var startR = data[idx], startG = data[idx + 1], startB = data[idx + 2], startA = data[idx + 3];
+
+        // 同じ色なら何もしない
+        if (startR === fillR && startG === fillG && startB === fillB && startA === fillA) return;
+
+        var tolerance = 30;
+
+        function matchStart(i) {
+            return Math.abs(data[i] - startR) <= tolerance &&
+                   Math.abs(data[i + 1] - startG) <= tolerance &&
+                   Math.abs(data[i + 2] - startB) <= tolerance &&
+                   Math.abs(data[i + 3] - startA) <= tolerance;
+        }
+
+        var stack = [[startX, startY]];
+        var visited = new Uint8Array(CANVAS_W * CANVAS_H);
+
+        while (stack.length > 0) {
+            var point = stack.pop();
+            var x = point[0], y = point[1];
+            if (x < 0 || x >= CANVAS_W || y < 0 || y >= CANVAS_H) continue;
+            var pi = y * CANVAS_W + x;
+            if (visited[pi]) continue;
+            var i = pi * 4;
+            if (!matchStart(i)) continue;
+
+            visited[pi] = 1;
+            data[i] = fillR; data[i + 1] = fillG; data[i + 2] = fillB; data[i + 3] = fillA;
+
+            stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+        }
+
+        ctx.putImageData(imageData, 0, 0);
     }
 
     // ============================================================
