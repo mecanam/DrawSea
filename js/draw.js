@@ -5,9 +5,9 @@
 (function () {
     'use strict';
 
-    // --- 定数 ---
-    const CANVAS_W = 800;
-    const CANVAS_H = 600;
+    // --- キャンバスサイズ（動的に設定） ---
+    let CANVAS_W = 800;
+    let CANVAS_H = 600;
     const COLORS = [
         '#000000', '#6B3A2A', '#D63031', '#E17055',
         '#FDCB6E', '#00B894', '#00CEC9', '#0984E3',
@@ -67,29 +67,22 @@
 
     // --- キャンバス初期化 ---
     function setupCanvas() {
-        canvas.width = CANVAS_W;
-        canvas.height = CANVAS_H;
-        fitCanvasDisplay();
-        window.addEventListener('resize', fitCanvasDisplay);
+        fitCanvasToWrapper();
+        window.addEventListener('resize', fitCanvasToWrapper);
         saveUndoState();
     }
 
-    function fitCanvasDisplay() {
+    function fitCanvasToWrapper() {
         const wrapper = canvas.parentElement;
         const wrapW = wrapper.clientWidth;
         const wrapH = wrapper.clientHeight;
-        const canvasAspect = CANVAS_W / CANVAS_H;
-        const wrapAspect = wrapW / wrapH;
-        var displayW, displayH;
-        if (wrapAspect > canvasAspect) {
-            displayH = wrapH;
-            displayW = Math.round(wrapH * canvasAspect);
-        } else {
-            displayW = wrapW;
-            displayH = Math.round(wrapW / canvasAspect);
-        }
-        canvas.style.width = displayW + 'px';
-        canvas.style.height = displayH + 'px';
+        // 内部解像度をラッパーに合わせる（描画エリア＝見える範囲）
+        CANVAS_W = wrapW;
+        CANVAS_H = wrapH;
+        canvas.width = CANVAS_W;
+        canvas.height = CANVAS_H;
+        canvas.style.width = wrapW + 'px';
+        canvas.style.height = wrapH + 'px';
     }
 
     // ============================================================
@@ -481,7 +474,7 @@
         saveUndoState();
         hasDrawn = false;
         sendBtn.disabled = true;
-        fitCanvasDisplay();
+        fitCanvasToWrapper();
     }
 
     // ============================================================
@@ -522,7 +515,7 @@
                 connectStatus.textContent = '';
                 connectScreen.style.display = 'none';
                 drawScreen.style.display = 'flex';
-                fitCanvasDisplay();
+                fitCanvasToWrapper();
             });
 
             conn.on('close', function () {
