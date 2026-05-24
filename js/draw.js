@@ -5,9 +5,9 @@
 (function () {
     'use strict';
 
-    // --- キャンバスサイズ（動的に設定） ---
-    let CANVAS_W = 800;
-    let CANVAS_H = 600;
+    // --- 定数 ---
+    const CANVAS_W = 800;
+    const CANVAS_H = 600;
     const COLORS = [
         '#000000', '#6B3A2A', '#D63031', '#E17055',
         '#FDCB6E', '#00B894', '#00CEC9', '#0984E3',
@@ -67,24 +67,21 @@
 
     // --- キャンバス初期化 ---
     function setupCanvas() {
-        fitCanvasToWrapper();
-        window.addEventListener('resize', fitCanvasToWrapper);
+        canvas.width = CANVAS_W;
+        canvas.height = CANVAS_H;
+        fitCanvasDisplay();
+        window.addEventListener('resize', fitCanvasDisplay);
         saveUndoState();
     }
 
-    function fitCanvasToWrapper() {
+    function fitCanvasDisplay() {
         const wrapper = canvas.parentElement;
         const wrapW = wrapper.clientWidth;
         const wrapH = wrapper.clientHeight;
-        // display:none の場合はサイズ0なのでスキップ
         if (wrapW === 0 || wrapH === 0) return;
-        // 内部解像度をラッパーに合わせる（描画エリア＝見える範囲）
-        CANVAS_W = wrapW;
-        CANVAS_H = wrapH;
-        canvas.width = CANVAS_W;
-        canvas.height = CANVAS_H;
-        canvas.style.width = wrapW + 'px';
-        canvas.style.height = wrapH + 'px';
+        const scale = Math.min(wrapW / CANVAS_W, wrapH / CANVAS_H);
+        canvas.style.width = Math.floor(CANVAS_W * scale) + 'px';
+        canvas.style.height = Math.floor(CANVAS_H * scale) + 'px';
     }
 
     // ============================================================
@@ -476,7 +473,7 @@
         saveUndoState();
         hasDrawn = false;
         sendBtn.disabled = true;
-        fitCanvasToWrapper();
+        fitCanvasDisplay();
     }
 
     // ============================================================
@@ -517,7 +514,7 @@
                 connectStatus.textContent = '';
                 connectScreen.style.display = 'none';
                 drawScreen.style.display = 'flex';
-                fitCanvasToWrapper();
+                fitCanvasDisplay();
             });
 
             conn.on('close', function () {
